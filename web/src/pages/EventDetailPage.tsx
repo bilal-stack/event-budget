@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import api from '../lib/api';
 import type { Event, BudgetItem } from '../types';
+import AiChatPanel from '../components/AiChatPanel';
 
 function formatCurrency(amount: number, currency: string) {
   return new Intl.NumberFormat('en-US', { style: 'currency', currency }).format(amount);
@@ -183,6 +184,7 @@ export default function EventDetailPage() {
             </table>
           )}
         </div>
+        <AiChatPanel eventId={id!} currency={event.currency} />
       </main>
     </div>
   );

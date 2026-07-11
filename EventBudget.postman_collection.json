@@ -1,0 +1,285 @@
+{
+  "info": {
+    "name": "EventBudget API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:3000/api" },
+    { "key": "token", "value": "" },
+    { "key": "workspaceId", "value": "" },
+    { "key": "eventId", "value": "" },
+    { "key": "budgetItemId", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/auth/register",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"user@example.com\",\n  \"password\": \"password123\",\n  \"workspaceName\": \"My Company\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "pm.collectionVariables.set('token', res.access_token);",
+                  "pm.collectionVariables.set('workspaceId', res.workspaceId);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/auth/login",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"user@example.com\",\n  \"password\": \"password123\"\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Events",
+      "item": [
+        {
+          "name": "Create Event",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "pm.collectionVariables.set('eventId', res.id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "x-workspace-id", "value": "{{workspaceId}}" }
+            ],
+            "url": "{{baseUrl}}/events",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Annual Gala 2025\",\n  \"date\": \"2025-12-15\",\n  \"currency\": \"USD\"\n}"
+            }
+          }
+        },
+        {
+          "name": "List Events",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "x-workspace-id", "value": "{{workspaceId}}" }
+            ],
+            "url": "{{baseUrl}}/events"
+          }
+        },
+        {
+          "name": "Get Event (with budget summary)",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "x-workspace-id", "value": "{{workspaceId}}" }
+            ],
+            "url": "{{baseUrl}}/events/{{eventId}}"
+          }
+        },
+        {
+          "name": "Update Event",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "x-workspace-id", "value": "{{workspaceId}}" }
+            ],
+            "url": "{{baseUrl}}/events/{{eventId}}",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Annual Gala 2025 (Updated)\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Delete Event",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "x-workspace-id", "value": "{{workspaceId}}" }
+            ],
+            "url": "{{baseUrl}}/events/{{eventId}}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Budget Items",
+      "item": [
+        {
+          "name": "List Budget Items",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "x-workspace-id", "value": "{{workspaceId}}" }
+            ],
+            "url": "{{baseUrl}}/events/{{eventId}}/budget-items"
+          }
+        },
+        {
+          "name": "Add Budget Item",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "pm.collectionVariables.set('budgetItemId', res.id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "x-workspace-id", "value": "{{workspaceId}}" }
+            ],
+            "url": "{{baseUrl}}/events/{{eventId}}/budget-items",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"category\": \"Catering\",\n  \"description\": \"Dinner for 100 guests\",\n  \"amount\": 5000,\n  \"currency\": \"USD\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Update Budget Item",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "x-workspace-id", "value": "{{workspaceId}}" }
+            ],
+            "url": "{{baseUrl}}/events/{{eventId}}/budget-items/{{budgetItemId}}",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"amount\": 6000,\n  \"description\": \"Dinner for 120 guests\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Delete Budget Item",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "x-workspace-id", "value": "{{workspaceId}}" }
+            ],
+            "url": "{{baseUrl}}/events/{{eventId}}/budget-items/{{budgetItemId}}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "AI Budget Assistant",
+      "item": [
+        {
+          "name": "Generate Proposal (chat)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "x-workspace-id", "value": "{{workspaceId}}" }
+            ],
+            "url": "{{baseUrl}}/events/{{eventId}}/ai/chat",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"message\": \"Plan a 200-person gala dinner with AV equipment, decorations, and photography\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Get Pending Proposal",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "x-workspace-id", "value": "{{workspaceId}}" }
+            ],
+            "url": "{{baseUrl}}/events/{{eventId}}/ai/proposal"
+          }
+        },
+        {
+          "name": "Approve Proposal",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "x-workspace-id", "value": "{{workspaceId}}" }
+            ],
+            "url": "{{baseUrl}}/events/{{eventId}}/ai/approve"
+          }
+        },
+        {
+          "name": "Reject Proposal",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "x-workspace-id", "value": "{{workspaceId}}" }
+            ],
+            "url": "{{baseUrl}}/events/{{eventId}}/ai/reject"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Security Tests",
+      "item": [
+        {
+          "name": "No token → 401",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/events"
+          }
+        },
+        {
+          "name": "Wrong workspace → 403",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "x-workspace-id", "value": "wrong-workspace-id" }
+            ],
+            "url": "{{baseUrl}}/events"
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -41,7 +41,7 @@ export class AiService {
     }
 
     return this.prisma.aiProposal.create({
-      data: { eventId, items, status: ProposalStatus.PENDING },
+      data: { eventId, items: items as any, status: ProposalStatus.PENDING },
     });
   }
 
