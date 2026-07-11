@@ -1,0 +1,65 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Workspace {
+  id        String   @id @default(cuid())
+  name      String
+  users     User[]
+  events    Event[]
+  createdAt DateTime @default(now())
+}
+
+model User {
+  id          String    @id @default(cuid())
+  email       String    @unique
+  password    String
+  workspaceId String
+  workspace   Workspace @relation(fields: [workspaceId], references: [id])
+  createdAt   DateTime  @default(now())
+}
+
+model Event {
+  id          String       @id @default(cuid())
+  title       String
+  date        DateTime
+  currency    String
+  workspaceId String
+  workspace   Workspace    @relation(fields: [workspaceId], references: [id])
+  budgetItems BudgetItem[]
+  proposals   AiProposal[]
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+}
+
+model BudgetItem {
+  id          String   @id @default(cuid())
+  category    String
+  description String
+  amount      Decimal  @db.Decimal(12, 2)
+  currency    String
+  eventId     String
+  event       Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model AiProposal {
+  id        String         @id @default(cuid())
+  eventId   String
+  event     Event          @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  status    ProposalStatus @default(PENDING)
+  items     Json
+  createdAt DateTime       @default(now())
+}
+
+enum ProposalStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
