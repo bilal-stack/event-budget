@@ -32,7 +32,8 @@ const makeService = (overrides: Record<string, any> = {}) => {
     generateProposal: jest.fn(),
   } as any;
 
-  return { service: new AiService(prisma, eventsService, gemini), prisma, gemini };
+  const gateway = { emitBudgetUpdated: jest.fn() } as any;
+  return { service: new AiService(prisma, eventsService, gemini, gateway), prisma, gemini, gateway };
 };
 
 // Rejects proposals when Gemini returns items in a different currency than the event

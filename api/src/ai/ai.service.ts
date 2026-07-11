@@ -8,6 +8,7 @@ import { ProposalStatus } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { EventsService } from '../events/events.service';
 import { GeminiService } from './gemini.service';
+import { EventsGateway } from '../gateway/events.gateway';
 
 @Injectable()
 export class AiService {
@@ -15,6 +16,7 @@ export class AiService {
     private prisma: PrismaService,
     private eventsService: EventsService,
     private gemini: GeminiService,
+    private gateway: EventsGateway,
   ) {}
 
   async chat(eventId: string, workspaceId: string, message: string) {
@@ -68,6 +70,8 @@ export class AiService {
       currency: string;
     }>;
 
+    const event = await this.eventsService.findOneOrThrow(eventId, workspaceId);
+
     await this.prisma.$transaction([
       this.prisma.budgetItem.createMany({
         data: items.map((i) => ({
@@ -83,6 +87,8 @@ export class AiService {
         data: { status: ProposalStatus.APPROVED },
       }),
     ]);
+
+    this.gateway.emitBudgetUpdated(event.workspaceId, eventId);
 
     return this.prisma.budgetItem.findMany({
       where: { eventId },

@@ -5,6 +5,7 @@ import { AuthModule } from './auth/auth.module';
 import { EventsModule } from './events/events.module';
 import { BudgetItemsModule } from './budget-items/budget-items.module';
 import { AiModule } from './ai/ai.module';
+import { GatewayModule } from './gateway/gateway.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { AiModule } from './ai/ai.module';
     EventsModule,
     BudgetItemsModule,
     AiModule,
+    GatewayModule,
   ],
 })
 export class AppModule {}

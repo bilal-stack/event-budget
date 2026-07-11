@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { io, Socket } from 'socket.io-client';
 import api from '../lib/api';
+import { getToken } from '../lib/auth';
 import ProposalCard from './ProposalCard';
 import type { AiProposal } from '../types';
 
@@ -44,6 +46,23 @@ export default function AiChatPanel({ eventId, currency }: Props) {
     queryKey: ['proposal', eventId],
     queryFn: () => api.get(`/events/${eventId}/ai/proposal`).then((r) => r.data),
   });
+
+  // Connect to Socket.IO, join workspace room via JWT, listen for budget:updated
+  useEffect(() => {
+    const socket: Socket = io(import.meta.env.VITE_API_URL.replace('/api', ''), {
+      query: { token: getToken() },
+    });
+
+    socket.on('budget:updated', (data: { eventId: string }) => {
+      if (data.eventId === eventId) {
+        queryClient.invalidateQueries({ queryKey: ['budget-items', eventId] });
+        queryClient.invalidateQueries({ queryKey: ['event', eventId] });
+        queryClient.invalidateQueries({ queryKey: ['events'] });
+      }
+    });
+
+    return () => { socket.disconnect(); };
+  }, [eventId, queryClient]);
 
   // Inject existing pending proposal into chat once on load
   const injectedRef = useRef(false);
