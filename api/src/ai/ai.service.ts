@@ -19,6 +19,7 @@ export class AiService {
     private gateway: EventsGateway,
   ) {}
 
+  // Calls Gemini to generate a budget proposal, blocks if one is already pending, validates all currencies match the event
   async chat(eventId: string, workspaceId: string, message: string) {
     const event = await this.eventsService.findOneOrThrow(eventId, workspaceId);
 
@@ -55,6 +56,7 @@ export class AiService {
     return proposal ?? null;
   }
 
+  // Writes all proposal items to BudgetItem and marks proposal APPROVED in a single transaction, then notifies workspace via Socket.IO
   async approve(eventId: string, workspaceId: string) {
     const event = await this.eventsService.findOneOrThrow(eventId, workspaceId);
 

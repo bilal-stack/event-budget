@@ -32,6 +32,7 @@ export class EventsService {
     });
   }
 
+  // Fetches event scoped to workspace — throws 404 rather than 403 to avoid leaking existence to other tenants
   async findOneOrThrow(id: string, workspaceId: string) {
     const event = await this.prisma.event.findFirst({
       where: { id, workspaceId },
@@ -40,6 +41,7 @@ export class EventsService {
     return event;
   }
 
+  // Returns event with computed totalSpend and per-category breakdown derived from budget items
   async findOneWithSummary(id: string, workspaceId: string) {
     const event = await this.prisma.event.findFirst({
       where: { id, workspaceId },

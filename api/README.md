@@ -88,6 +88,12 @@ The server joins the client to their workspace room. On proposal approval, `budg
 { "eventId": "..." }
 ```
 
+## AI Design Notes
+
+**Each Gemini call is independent — no conversation history is passed between turns.** The chat UI shows a visual history of messages on the frontend, but each `/ai/chat` request sends only the current message along with the event context (title, date, currency) to Gemini. This is intentional for the scope of this assessment ("accepts a plain text message").
+
+To add true multi-turn conversation, previous messages would need to be stored in the database and passed to `model.startChat({ history: [...] })` on each call — out of scope here.
+
 ## Tests
 
 ```bash

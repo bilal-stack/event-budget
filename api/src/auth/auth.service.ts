@@ -16,6 +16,7 @@ export class AuthService {
     private jwt: JwtService,
   ) {}
 
+  // Creates workspace and user atomically — if either fails, neither is persisted
   async register(dto: RegisterDto) {
     const existing = await this.prisma.user.findUnique({
       where: { email: dto.email },

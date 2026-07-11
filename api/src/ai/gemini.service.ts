@@ -19,7 +19,7 @@ export class GeminiService {
   }
 
   async generateProposal(event: Event, message: string): Promise<ProposalItem[]> {
-    const model = this.genAI.getGenerativeModel({ model: 'gemini-2.5-flash-lite' });
+    const model = this.genAI.getGenerativeModel({ model: 'gemini-3.1-flash-lite' });
 
     const prompt = `You are a budget planning assistant.
 Generate a detailed budget proposal for the following event:
