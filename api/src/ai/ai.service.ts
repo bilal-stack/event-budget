@@ -56,7 +56,7 @@ export class AiService {
   }
 
   async approve(eventId: string, workspaceId: string) {
-    await this.eventsService.findOneOrThrow(eventId, workspaceId);
+    const event = await this.eventsService.findOneOrThrow(eventId, workspaceId);
 
     const proposal = await this.prisma.aiProposal.findFirst({
       where: { eventId, status: ProposalStatus.PENDING },
@@ -69,8 +69,6 @@ export class AiService {
       amount: number;
       currency: string;
     }>;
-
-    const event = await this.eventsService.findOneOrThrow(eventId, workspaceId);
 
     await this.prisma.$transaction([
       this.prisma.budgetItem.createMany({

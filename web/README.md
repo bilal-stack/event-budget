@@ -1,32 +1,67 @@
-# React + TypeScript + Vite
+# EventBudget — Web
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+React + TypeScript frontend for the multi-tenant event budgeting platform.
 
-Currently, two official plugins are available:
+## Stack
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- **React 18** + **TypeScript** — Vite
+- **TanStack Query v5** — all server state
+- **React Router v6** — client-side routing
+- **Tailwind CSS v4** — styling
+- **Socket.IO client** — real-time budget updates
+- **Axios** — HTTP client with JWT + workspace interceptors
 
-## React Compiler
+## Setup
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+### 1. Install dependencies
 
-## Expanding the Oxlint configuration
-
-If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
-
-```json
-{
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
-  "options": {
-    "typeAware": true
-  },
-  "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
-}
+```bash
+npm install
 ```
 
-See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
+### 2. Configure environment
+
+Create a `.env` file:
+
+```env
+VITE_API_URL=http://localhost:3000/api
+```
+
+Make sure the API server is running first.
+
+### 3. Start the dev server
+
+```bash
+npm run dev
+```
+
+App runs on `http://localhost:5173`
+
+## Screens
+
+### Login / Register
+- Tab-switched form — register creates a workspace automatically
+- JWT and workspaceId stored in localStorage on login
+- Redirects to dashboard on success
+
+### Events List (`/`)
+- Table of all workspace events with total budget per event
+- Create new event (title, date, currency)
+- Click any row to open event detail
+- Delete event
+
+### Event Detail (`/events/:id`)
+- Budget summary cards — total spend + per-category breakdown
+- Budget items table — add, inline edit, delete
+- **AI Budget Assistant** chat panel:
+  - Type a message describing your needs
+  - Gemini generates a proposal shown as a card with line items
+  - Approve → items written to budget, table refreshes instantly via Socket.IO
+  - Reject → proposal dismissed, new one can be requested
+  - Pending proposals persist across page reloads
+
+## Build
+
+```bash
+npm run build
+```
